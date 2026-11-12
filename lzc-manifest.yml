@@ -1,0 +1,75 @@
+application:
+  subdomain: loopforge
+  multi_instance: false
+  public_path:
+    - /
+  upstreams:
+    - location: /
+      backend: http://platform:8080/
+
+services:
+  platform:
+    # ghcr.io/tencent/loopforge:0.3.7
+    image: registry.lazycat.cloud/czyt/tencent/loopforge:PLACEHOLDER
+    command: ["-workspaces", "/lzcapp/var/workspaces"]
+    environment:
+      - AGENTFLOW_HTTP_PORT=8080
+      - AGENTFLOW_MYSQL_DSN=loopforge:{{ stable_secret "lf_db_password" }}@tcp(mysql:3306)/loopforge
+      - AGENTFLOW_SESSION_SECRET={{ stable_secret "lf_session_secret" }}
+      - AGENTFLOW_AUTH_REQUIRED=true
+      - AGENTFLOW_ALLOW_SIGNUP={{ .U.allow_signup }}
+      - AGENTFLOW_SECURE_COOKIES=false
+      - AGENTFLOW_ASSISTANT_SESSION_DIR=/data/assistant
+      - AGENTFLOW_CLARIFY_SESSION_DIR=/data/clarify
+      - AGENTFLOW_PLATFORM_MCP_URL=http://platform:8080
+      - AGENTFLOW_LOCAL_SANDBOX=docker
+      - AGENTFLOW_ISOLATED_IMAGE=registry.lazycat.cloud/czyt/tencent/loopforge:PLACEHOLDER
+      - AGENTFLOW_DOCKER_NETWORK={{ .S.AppID }}_default
+      - AGENTFLOW_RUNNER_BINARY=/app/bin/agentflow-runner-{os}-{arch}
+      - AGENTFLOW_GATE_MCP_BINARY=/app/bin/agentflow-gate-mcp-{os}-{arch}
+      - HOME=/lzcapp/var/home
+      - AGENTFLOW_RUNTIME_CLI_DIR=/lzcapp/var/cli
+    binds:
+      - /lzcapp/var/data:/data
+      - /lzcapp/var/workspaces:/lzcapp/var/workspaces
+      - /lzcapp/var/home:/lzcapp/var/home
+      - /lzcapp/var/cli:/lzcapp/var/cli
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - mysql
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=2).close()"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  mysql:
+    # docker.io/library/mysql:8.4
+    image: registry.lazycat.cloud/czyt/library/mysql:8.4
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    environment:
+      - MYSQL_DATABASE=loopforge
+      - MYSQL_USER=loopforge
+      - MYSQL_PASSWORD={{ stable_secret "lf_db_password" }}
+      - MYSQL_ROOT_PASSWORD={{ stable_secret "lf_db_root_password" }}
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/mysql:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - MYSQL_PWD=$$MYSQL_PASSWORD mysqladmin ping -h 127.0.0.1 -u loopforge --silent
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+
+usage: |
+  首次打开在登录页注册账号，第一个账号自动成为管理员。沙箱功能需要挂载宿主机 Docker，
+  平台会以 sibling 容器方式运行编码 Agent（CodeBuddy / Codex / Claude Code）。
+  模型 API Key 与 GitHub 授权在应用内「个人设置」中配置。

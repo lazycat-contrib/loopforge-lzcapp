@@ -1,0 +1,12 @@
+params:
+  - id: allow_signup
+    type: bool
+    name: "Allow signup"
+    description: "Allow self-service registration on the login page. Disable to keep the workspace invite-only."
+    default_value: "true"
+
+locales:
+  zh:
+    allow_signup:
+      name: "允许自助注册"
+      description: "允许在登录页自助注册账号。关闭后仅已有账号可登录。"
