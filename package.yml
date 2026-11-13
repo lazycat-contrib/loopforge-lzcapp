@@ -1,12 +1,11 @@
 package: community.lazycat.app.loopforge
-version: 0.3.7
+version: 0.3.8
 name: LoopForge
 description: "Self-hosted team workspace for coding-agent delivery: orchestrate CodeBuddy, Codex and Claude Code in Docker sandboxes with SOP workflows and human approval gates."
 min_os_version: 1.5.0
 author: Tencent
 license: MIT
 homepage: https://github.com/Tencent/LoopForge
-
 locales:
   zh:
     name: "LoopForge"
@@ -14,7 +13,6 @@ locales:
   en:
     name: "LoopForge"
     description: "Self-hosted team workspace for coding-agent delivery: orchestrate CodeBuddy, Codex and Claude Code in Docker sandboxes with SOP workflows and human approval gates."
-
 permissions:
   required:
     - net.internet
