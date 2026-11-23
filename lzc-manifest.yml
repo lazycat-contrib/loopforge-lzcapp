@@ -9,8 +9,8 @@ application:
 services:
   platform:
     # ghcr.io/tencent/loopforge:0.3.7
-    # upstream: ghcr.io/tencent/loopforge:0.4.0
-    image: ghcr.1ms.run/tencent/loopforge:0.4.0
+    # upstream: ghcr.io/tencent/loopforge:0.4.2
+    image: ghcr.1ms.run/tencent/loopforge:0.4.2
     command: ["-workspaces", "/lzcapp/var/workspaces"]
     environment:
       - AGENTFLOW_HTTP_PORT=8080

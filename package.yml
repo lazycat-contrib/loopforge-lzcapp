@@ -1,5 +1,5 @@
 package: community.lazycat.app.loopforge
-version: 0.4.0
+version: 0.4.2
 name: LoopForge
 description: "Self-hosted team workspace for coding-agent delivery: orchestrate CodeBuddy, Codex and Claude Code in Docker sandboxes with SOP workflows and human approval gates."
 min_os_version: 1.5.0
